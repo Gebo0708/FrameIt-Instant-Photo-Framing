@@ -1,3 +1,5 @@
+// script.js
+
 const els = {
   templateInput: document.getElementById('templateInput'),
   photosInput: document.getElementById('photosInput'),
@@ -18,6 +20,8 @@ const els = {
   downloadModal: document.getElementById('downloadModal'),
   watchAdDownloadBtn: document.getElementById('watchAdDownloadBtn'),
   downloadWithWatermarkBtn: document.getElementById('downloadWithWatermarkBtn'),
+  adModal: document.getElementById('adModal'),
+  closeAdModal: document.getElementById('closeAdModal'),
 };
 
 let templateImage = null;
@@ -139,7 +143,7 @@ function checkReady() {
     : 'Upload a frame and photos to begin';
 }
 
-// Ad watch (removes watermark for the day)
+// Ad watch helpers
 function hasWatchedAd() {
   return localStorage.getItem('frameItAd') === new Date().toDateString();
 }
@@ -148,7 +152,68 @@ function setWatchedAd() {
   localStorage.setItem('frameItAd', new Date().toDateString());
 }
 
-// Process
+// Show real AdSense ad and grant reward after interaction
+function showAdAndReward(onReward) {
+  els.adModal.classList.remove('hidden');
+  
+  // Load the AdSense ad unit
+  (adsbygoogle = window.adsbygoogle || []).push({});
+
+  // Auto-grant after ~25 seconds (typical short ad length)
+  const autoGrantTimer = setTimeout(() => {
+    onReward();
+    els.adModal.classList.add('hidden');
+    els.status.textContent = 'Thanks for watching! Reward unlocked.';
+  }, 25000);
+
+  // Or grant when user clicks close
+  els.closeAdModal.onclick = () => {
+    clearTimeout(autoGrantTimer);
+    onReward();
+    els.adModal.classList.add('hidden');
+    els.status.textContent = 'Reward unlocked — enjoy!';
+  };
+}
+
+// +5 photos
+els.watchAdExtraBtn.addEventListener('click', () => {
+  showAdAndReward(() => {
+    remainingPhotosToday += 5;
+    els.status.textContent = `+5 photos unlocked! Remaining today: ${remainingPhotosToday}`;
+  });
+});
+
+// Remove watermark
+els.watchAdBtn.addEventListener('click', () => {
+  showAdAndReward(() => {
+    setWatchedAd();
+    els.status.textContent = 'Watermark removed for today!';
+    els.watchAdBtn.disabled = true;
+  });
+});
+
+// Download clean version
+els.watchAdDownloadBtn.addEventListener('click', () => {
+  showAdAndReward(() => {
+    setWatchedAd();
+    els.downloadModal.classList.add('hidden');
+    performDownload(currentDownloadIndex);
+    if (pendingDownloadAll) {
+      downloadAllClean();
+    }
+    els.status.textContent = 'Ad watched! Clean download ready.';
+  });
+});
+
+els.downloadWithWatermarkBtn.addEventListener('click', () => {
+  els.downloadModal.classList.add('hidden');
+  performDownload(currentDownloadIndex);
+  if (pendingDownloadAll) {
+    downloadAllWithWatermark();
+  }
+});
+
+// Process images
 els.processBtn.addEventListener('click', async () => {
   if (!templateImage || !photoImages.length) return;
 
@@ -223,7 +288,7 @@ els.processBtn.addEventListener('click', async () => {
       ctx.globalAlpha = 1;
     }
 
-    addResult(canvas, name);
+    addResult(canvas, name, !!watermarkImg);
     processedResults.push({canvas, name, hasWatermark: !!watermarkImg});
 
     remainingPhotosToday--;
@@ -251,7 +316,7 @@ function addResult(canvas, name, hasWatermark) {
     currentDownloadIndex = processedResults.findIndex(r => r.name === name);
     pendingDownloadAll = false;
     if (hasWatermark) {
-      showDownloadModal();
+      els.downloadModal.classList.remove('hidden');
     } else {
       performDownload(currentDownloadIndex);
     }
@@ -264,33 +329,7 @@ function addResult(canvas, name, hasWatermark) {
   els.previewCont.appendChild(div);
 }
 
-// Modal handling
-function showDownloadModal() {
-  els.downloadModal.classList.remove('hidden');
-}
-
-function hideDownloadModal() {
-  els.downloadModal.classList.add('hidden');
-}
-
-els.watchAdDownloadBtn.addEventListener('click', () => {
-  setWatchedAd();
-  els.status.textContent = 'Ad watched! Watermark removed for today.';
-  hideDownloadModal();
-  performDownload(currentDownloadIndex);
-  if (pendingDownloadAll) {
-    downloadAllClean();
-  }
-});
-
-els.downloadWithWatermarkBtn.addEventListener('click', () => {
-  hideDownloadModal();
-  performDownload(currentDownloadIndex);
-  if (pendingDownloadAll) {
-    downloadAllWithWatermark();
-  }
-});
-
+// Download logic
 function performDownload(index) {
   if (index < 0) return;
   const {canvas, name} = processedResults[index];
@@ -300,11 +339,10 @@ function performDownload(index) {
   a.click();
 }
 
-// Download All
 els.downloadAllBtn.addEventListener('click', () => {
   pendingDownloadAll = true;
   if (processedResults.some(r => r.hasWatermark)) {
-    showDownloadModal();
+    els.downloadModal.classList.remove('hidden');
   } else {
     downloadAllClean();
   }
@@ -347,19 +385,6 @@ els.clearBtn.addEventListener('click', () => {
   remainingPhotosToday = 5;
   checkReady();
   els.status.textContent = 'Everything cleared — ready for new photos!';
-});
-
-// Watch Ad for watermark removal
-els.watchAdBtn.addEventListener('click', () => {
-  setWatchedAd();
-  els.status.textContent = 'Ad watched! Watermark removed for today.';
-  els.watchAdBtn.disabled = true;
-});
-
-// Watch Ad for +5 more photos (unlimited)
-els.watchAdExtraBtn.addEventListener('click', () => {
-  remainingPhotosToday += 5;
-  els.status.textContent = `Ad watched! +5 more photos unlocked (remaining today: ${remainingPhotosToday}).`;
 });
 
 // Helper: load image
