@@ -16,7 +16,7 @@
 
   <header>
     <div class="logo-header">
-      <img src="logo.png" alt="Framemelt Logo" class="logo">
+      <img src="logo.png" alt="Framelt Logo" class="logo">
       <h1>Framelt</h1>
     </div>
     <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
@@ -28,31 +28,31 @@
 
     <section class="card step">
       <h2>1. Upload your frame / overlay</h2>
-      <p class="hint">Transparent PNG recommended — it determines the output size</p>
+      <p class="hint">Transparent PNG recommended — sets output size</p>
 
-      <div id="templateDrop" class="dropzone">
+      <div id="templateDrop" class="dropzone" role="button" tabindex="0" aria-label="Upload frame image">
         <i class="fa-solid fa-layer-group fa-3x"></i>
         <p>Drag & drop your frame here<br>or <strong>click to browse</strong></p>
       </div>
-      <input type="file" id="templateInput" accept="image/png,image/webp" />
+      <input type="file" id="templateInput" accept="image/png,image/webp" hidden />
     </section>
 
     <section class="card step">
       <h2>2. Add your photos</h2>
-      <p class="hint">Free: 5 photos per day — watch ad to unlock +5 more each time</p>
+      <p class="hint">Free: up to 15 photos per day — watch ad to unlock +10 more</p>
 
-      <div id="photosDrop" class="dropzone">
+      <div id="photosDrop" class="dropzone" role="button" tabindex="0" aria-label="Upload multiple photos">
         <i class="fa-solid fa-images fa-3x"></i>
         <p>Drag & drop photos here<br>or <strong>click to select multiple</strong></p>
       </div>
-      <input type="file" id="photosInput" accept="image/*" multiple />
+      <input type="file" id="photosInput" accept="image/*" multiple hidden />
 
       <div id="photo-previews" class="photo-grid"></div>
 
       <div class="controls-bottom">
         <div class="settings-panel">
           <div class="setting">
-            <label>Fit mode</label>
+            <label for="fitMode">Fit mode</label>
             <select id="fitMode">
               <option value="contain" selected>Fit inside frame</option>
               <option value="cover">Fill frame (may crop)</option>
@@ -60,7 +60,7 @@
           </div>
 
           <div class="setting">
-            <label>Background fill</label>
+            <label for="bgFill">Background fill</label>
             <select id="bgFill">
               <option value="none">None / transparent</option>
               <option value="white" selected>White</option>
@@ -70,7 +70,7 @@
           </div>
 
           <div class="setting range-setting">
-            <label>Frame opacity: <span id="opacityValue">95%</span></label>
+            <label for="opacity">Frame opacity: <span id="opacityValue">95%</span></label>
             <input type="range" id="opacity" min="0.3" max="1" step="0.05" value="0.95" />
           </div>
         </div>
@@ -80,7 +80,7 @@
             <i class="fa-solid fa-video"></i> Watch Ad (Remove Watermark Today)
           </button>
           <button id="watchAdExtraBtn" class="btn ad extra">
-            <i class="fa-solid fa-video"></i> Watch Ad (+5 More Photos)
+            <i class="fa-solid fa-video"></i> Watch Ad (+10 Photos)
           </button>
         </div>
 
@@ -93,8 +93,8 @@
           </button>
         </div>
 
-        <div id="status" class="status-message">
-          Upload a frame and photos to begin
+        <div id="status" class="status-message" role="status">
+          Upload a frame and at least one photo to begin
         </div>
       </div>
     </section>
@@ -116,7 +116,7 @@
   <div id="downloadModal" class="modal hidden">
     <div class="modal-content">
       <h3>Remove Watermark?</h3>
-      <p>Watch a short ad to download this image without watermark (removes for today).</p>
+      <p>Watch a short ad to download without watermark (removes for today).</p>
       <div class="modal-buttons">
         <button id="watchAdDownloadBtn" class="btn ad">Watch Ad & Download Clean</button>
         <button id="downloadWithWatermarkBtn" class="btn secondary">Download with Watermark</button>
@@ -124,26 +124,22 @@
     </div>
   </div>
 
-  <!-- Ad modal (shown when user clicks any Watch Ad button) -->
+  <!-- Ad modal -->
   <div id="adModal" class="modal hidden">
-    <div class="modal-content" style="max-width:500px; padding:24px; text-align:center;">
+    <div class="modal-content" style="max-width:520px; padding:28px; text-align:center;">
       <h3>Watch Ad to Unlock</h3>
       <p>Watch a short ad to get your reward!</p>
-      
-      <!-- Your AdSense ad unit -->
-      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5253930251168496"
-     crossorigin="anonymous"></script>
-      <ins class="adsbygoogle"
-           style="display:block; min-height:250px; margin:20px auto;"
-           data-ad-client="ca-pub-5253930251168496"
-           data-ad-slot="9812676021"
-           data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
-      <script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-      </script>
-      
-      <button id="closeAdModal" class="btn secondary" style="margin-top:20px; width:100%;">
+
+      <div style="min-height:280px; margin:24px auto; width:100%; max-width:100%;">
+        <ins class="adsbygoogle"
+             style="display:block; min-height:250px;"
+             data-ad-client="ca-pub-5253930251168496"
+             data-ad-slot="9812676021"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      </div>
+
+      <button id="closeAdModal" class="btn secondary" style="margin-top:24px; width:100%;">
         Close (Reward granted)
       </button>
     </div>
