@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Framelt – Instant Photo Framing</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="logo-header">
+      <img src="logo.png" alt="Framemelt Logo" class="logo">
+      <h1>Framelt</h1>
+    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
+      <i class="fa-solid fa-moon"></i>
+    </button>
+  </header>
+
+  <main>
+
+    <section class="card step">
+      <h2>1. Upload your frame / overlay</h2>
+      <p class="hint">Transparent PNG recommended — it determines the output size</p>
+
+      <div id="templateDrop" class="dropzone">
+        <i class="fa-solid fa-layer-group fa-3x"></i>
+        <p>Drag & drop your frame here<br>or <strong>click to browse</strong></p>
+      </div>
+      <input type="file" id="templateInput" accept="image/png,image/webp" />
+    </section>
+
+    <section class="card step">
+      <h2>2. Add your photos</h2>
+      <p class="hint">Free: 5 photos per day — watch ad to unlock +5 more each time</p>
+
+      <div id="photosDrop" class="dropzone">
+        <i class="fa-solid fa-images fa-3x"></i>
+        <p>Drag & drop photos here<br>or <strong>click to select multiple</strong></p>
+      </div>
+      <input type="file" id="photosInput" accept="image/*" multiple />
+
+      <div id="photo-previews" class="photo-grid"></div>
+
+      <div class="controls-bottom">
+        <div class="settings-panel">
+          <div class="setting">
+            <label>Fit mode</label>
+            <select id="fitMode">
+              <option value="contain" selected>Fit inside frame</option>
+              <option value="cover">Fill frame (may crop)</option>
+            </select>
+          </div>
+
+          <div class="setting">
+            <label>Background fill</label>
+            <select id="bgFill">
+              <option value="none">None / transparent</option>
+              <option value="white" selected>White</option>
+              <option value="black">Black</option>
+              <option value="blur">Blurred photo background</option>
+            </select>
+          </div>
+
+          <div class="setting range-setting">
+            <label>Frame opacity: <span id="opacityValue">95%</span></label>
+            <input type="range" id="opacity" min="0.3" max="1" step="0.05" value="0.95" />
+          </div>
+        </div>
+
+        <div class="premium-options">
+          <button id="watchAdBtn" class="btn ad">
+            <i class="fa-solid fa-video"></i> Watch Ad (Remove Watermark Today)
+          </button>
+          <button id="watchAdExtraBtn" class="btn ad extra">
+            <i class="fa-solid fa-video"></i> Watch Ad (+5 More Photos)
+          </button>
+        </div>
+
+        <div class="action-row">
+          <button id="processBtn" class="btn primary" disabled>
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Create Framed Photos
+          </button>
+          <button id="clearBtn" class="btn secondary">
+            <i class="fa-solid fa-trash-can"></i> Clear Everything
+          </button>
+        </div>
+
+        <div id="status" class="status-message">
+          Upload a frame and photos to begin
+        </div>
+      </div>
+    </section>
+
+    <section class="card hidden" id="resultsSection">
+      <h2>Your Framed Photos</h2>
+      <div id="preview-container" class="result-grid"></div>
+
+      <div class="action-row center">
+        <button id="downloadAllBtn" class="btn primary" disabled>
+          <i class="fa-solid fa-download"></i> Download All PNGs
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Download watermark removal modal -->
+  <div id="downloadModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Remove Watermark?</h3>
+      <p>Watch a short ad to download this image without watermark (removes for today).</p>
+      <div class="modal-buttons">
+        <button id="watchAdDownloadBtn" class="btn ad">Watch Ad & Download Clean</button>
+        <button id="downloadWithWatermarkBtn" class="btn secondary">Download with Watermark</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
